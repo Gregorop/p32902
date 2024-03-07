@@ -39,6 +39,11 @@ class Hero(Baza):
             for wall in touched:
                 self.rect.y = max(wall.rect.bottom,self.rect.y)
 
+        touched = sprite.spritecollide(self,enemies,False)
+        if touched:
+            global game_mode
+            game_mode = 'sad finish'
+
         self.draw()
 
 class Enemy(Baza):
@@ -80,7 +85,12 @@ display.set_caption('Apex')
 backgroung = image.load('fon.jpg')
 backgroung = transform.scale(backgroung,(W,H))
 
+sad_backgroung = image.load('sad_finish.jpg')
+
+enemies = sprite.Group()
 drow_range = Enemy(x=200,y=200,w=300,h=250,filename ='drowka.png',heath=100)
+enemies.add(drow_range)
+
 dragon_knight = Hero(x=700,y=200,w=200,h=250,filename ='dkmodel.png',heath=150)
 drow_range.x_speed = -1
 
@@ -89,13 +99,19 @@ Wall_color(x=100,y=100,w=50,h=500,color =(255,255,255))
 Wall_color(x=500,y=100,w=50,h=500,color =(255,255,255))
 Wall_color(x=100,y=100,w=800,h=50,color =(255,255,255))
 
+game_mode = 'game'
+
 while True:
-    win.blit(backgroung,(0,0))
+    if game_mode == 'game':
+        win.blit(backgroung,(0,0))
 
-    dragon_knight.update()
-    drow_range.update()
+        dragon_knight.update()
+        drow_range.update()
 
-    walls.update()
+        walls.update()
+    
+    if game_mode == 'sad finish':
+        win.blit(sad_backgroung,(0,0))
 
     for e in event.get():
         if e.type == QUIT:
