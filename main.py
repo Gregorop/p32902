@@ -22,10 +22,14 @@ class Hero(Baza):
         if self.x_speed > 0:
             for wall in touched:
                 self.rect.right = min(wall.rect.x,self.rect.right)
+            
+            if self.rect.right > W: self.rect.right = W #правый край экрана
 
         if self.x_speed < 0:  
-            for wall in touched:  
+            for wall in touched:  #проверка стен (4 раза в разных условиях)
                 self.rect.x = max(wall.rect.right,self.rect.x)
+            
+            if self.rect.x < 0: self.rect.x = 0 #левый край экрана
 
         if self.y_speed > 0:
             for wall in touched:
