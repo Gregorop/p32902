@@ -16,8 +16,12 @@ class Hero(Baza):
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
-        if self.rect.x < 0:
-            self.rect.x = 0
+        touched = sprite.spritecollide(self,walls,False)
+        for wall in touched:
+            if self.x_speed > 0:
+                self.rect.right = wall.rect.x
+            if self.x_speed < 0:    
+                self.rect.x = wall.rect.right
 
         self.draw()
 
@@ -63,6 +67,7 @@ drow_range.x_speed = -1
 walls = sprite.Group()
 Wall_color(x=100,y=100,w=50,h=500,color =(255,255,255))
 Wall_color(x=500,y=100,w=50,h=500,color =(255,255,255))
+Wall_color(x=100,y=100,w=800,h=50,color =(255,255,255))
 
 while True:
     win.blit(backgroung,(0,0))
