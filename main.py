@@ -1,8 +1,9 @@
 from pygame import *
 from random import randint
 
-class Baza:
+class Baza(sprite.Sprite):
     def __init__(self,x,y,w,h,heath,filename):
+        super().__init__()
         self.heath = heath
         self.rect = Rect(x,y,w,h)
         self.image = transform.scale(image.load(filename),(w,h))
@@ -16,12 +17,23 @@ class Hero(Baza):
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
+        #print(self.x_speed,self.y_speed)
         touched = sprite.spritecollide(self,walls,False)
-        for wall in touched:
-            if self.x_speed > 0:
-                self.rect.right = wall.rect.x
-            if self.x_speed < 0:    
-                self.rect.x = wall.rect.right
+        if self.x_speed > 0:
+            for wall in touched:
+                self.rect.right = min(wall.rect.x,self.rect.right)
+
+        if self.x_speed < 0:  
+            for wall in touched:  
+                self.rect.x = max(wall.rect.right,self.rect.x)
+
+        if self.y_speed > 0:
+            for wall in touched:
+                self.rect.bottom = min(wall.rect.y,self.rect.bottom)
+
+        if self.y_speed < 0:    
+            for wall in touched:
+                self.rect.y = max(wall.rect.bottom,self.rect.y)
 
         self.draw()
 
@@ -36,9 +48,13 @@ class Enemy(Baza):
         self.rect.x += self.x_speed
         self.draw()
 
-#class Wall_picture(Baza):
-    #def update(self):
-        #self.draw()
+class Wall_picture(Baza):
+    def __init__(self,x,y,w,h,heath,filename):
+        super().__init__(x,y,w,h,heath,filename)
+        walls.add(self)
+
+    def update(self):
+        self.draw()
 
 class Wall_color(sprite.Sprite):
     def __init__(self,x,y,w,h,color):
@@ -83,18 +99,26 @@ while True:
 
         if e.type == KEYDOWN and e.key == K_RIGHT:
             dragon_knight.x_speed = 1
+            dragon_knight.y_speed = 0
 
         if e.type == KEYDOWN and e.key == K_LEFT:
             dragon_knight.x_speed = -1
+            dragon_knight.y_speed = 0
 
         if e.type == KEYDOWN and e.key == K_UP:
             dragon_knight.y_speed = -1
+            dragon_knight.x_speed = 0
 
         if e.type == KEYDOWN and e.key == K_DOWN:
             dragon_knight.y_speed = 1
+            dragon_knight.x_speed = 0
 
         if e.type == KEYUP:
-            if e.key == K_DOWN:
+            if e.key == K_DOWN or e.key == K_UP:
                 dragon_knight.y_speed = 0
+            
+            if e.key == K_RIGHT or e.key == K_LEFT:
+                dragon_knight.x_speed = 0
+
 
     display.update()
